@@ -1,0 +1,11 @@
+version: '3.7'
+
+services:
+  
+  clickhouse-server:
+    image: yandex/clickhouse-server
+    container_name: clickhouse-server
+    ports:
+      - '8123:8123'
+      - '9000:9000'
+     

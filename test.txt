@@ -1,0 +1,39 @@
+--Задание №1
+SELECT client_name, 
+	   payment_date,
+	   value
+FROM (SELECT client_name, payment_date, value, DENSE_RANK() OVER(ORDER BY value DESC) AS rank
+	  FROM payments
+	  WHERE (payment_date BETWEEN '2023-01-01' AND '2023-01-31')) sub
+WHERE RANK <= 3;
+
+--Задание №2
+SELECT COALESCE(department, 'Отдел не определен') AS department,
+	   SUM(value) AS sum
+FROM payments p 
+	LEFT JOIN manager_departments md 
+	  ON replaceOne(md.email, '.', '') = p.manager_email 
+GROUP BY department
+ORDER BY sum DESC;
+
+--Задание №3
+SELECT id, 
+	   value, 
+	   client_id, 
+	   client_name, 
+	   payment_date, 
+	   manager_name, 
+	   manager_email, 
+	   IF (ROW_NUMBER() OVER(PARTITION BY client_id ORDER BY payment_date) = 1, 'Новый', 'Действующий') AS client_state 
+FROM payments p
+
+--Задание №4
+SELECT arrayElement(['январь', 'февраль', 'март',
+					 'апрель', 'май', 'июнь',
+					 'июль', 'август', 'сентябрь',
+					 'октябрь', 'ноябрь', 'декабрь'],
+					 toMonth(payment_date)) || ' ' || dateName('year', payment_date) AS period,
+	   SUM(value) AS revenue_by_month,
+  	   SUM(revenue_by_month) OVER (ORDER BY period DESC) AS revenue_cumulative
+FROM  payments p
+GROUP BY period;
