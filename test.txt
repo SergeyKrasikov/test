@@ -32,8 +32,13 @@ SELECT arrayElement(['январь', 'февраль', 'март',
 					 'апрель', 'май', 'июнь',
 					 'июль', 'август', 'сентябрь',
 					 'октябрь', 'ноябрь', 'декабрь'],
-					 toMonth(payment_date)) || ' ' || dateName('year', payment_date) AS period,
-	   SUM(value) AS revenue_by_month,
-  	   SUM(revenue_by_month) OVER (ORDER BY period DESC) AS revenue_cumulative
-FROM  payments p
-GROUP BY period;
+					 month) || ' ' || year AS period,
+	   revenue_by_month,
+	   revenue_cumulative
+FROM	   
+	(SELECT toMonth(payment_date) AS month,
+	   		dateName('year', payment_date) AS year,
+	   		SUM(value) AS revenue_by_month,
+  	   		SUM(revenue_by_month) OVER (ORDER BY year, month) AS revenue_cumulative
+	 FROM  payments p
+	 GROUP BY year, month) sub;
