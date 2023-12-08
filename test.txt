@@ -5,7 +5,7 @@ SELECT client_name,
 FROM (SELECT client_name, payment_date, value, DENSE_RANK() OVER(ORDER BY value DESC) AS rank
 	  FROM payments
 	  WHERE (payment_date BETWEEN '2023-01-01' AND '2023-01-31')) sub
-WHERE RANK <= 3;
+WHERE rank <= 3;
 
 --Задание №2
 SELECT COALESCE(department, 'Отдел не определен') AS department,
